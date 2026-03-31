@@ -1,7 +1,7 @@
 {
     "remotePath": "./",
-    "host": "srv010010037045.generationsgaither.com",
-    "username": "MikrotikScripts",
+    "host": "backupftp.generationsgaither.com",
+    "username": "mikrotikscripts",
     "password": "4MSuse0nly.",
     "port": 21,
     "secure": false,

@@ -17,7 +17,7 @@
             :put "Here I am "
             :delay 5
         } else={
-            :set $temporaryName "MikrotikScripts"
+            :set $temporaryName "mikrotikscripts"
             :put "Here we are"
             :delay 5
         }
