@@ -1,7 +1,17 @@
+# MikroTik Management Scripts
+# MMS Version: 0.01 Testing
 
 {
     # setup Variables and lookup maps
     :global hostName
+
+    :do {
+        /import file-name=dataSets/dataSetMapPSKWirelessSecurityProfiles.rsc
+    } on-error={
+        :error "Failed to import dataSetMapPSKWirelessSecurityProfiles"
+    }
+
+    :global dataSetMapPSKWirelessSecurityProfiles
 
     :local deviceTypeMap {
         "acp"="ACCESS_POINT";
@@ -119,82 +129,7 @@
         "200"="false";
         "201"="false"
     }
-    :local wirelesSecurityProfiles {
-        "GGT037"="EtdY37A6";
-        "GGT038"="Lq8N2HPa";
-        "GGT039"="EoD98kSK";
-        "GGT040"="PjH83HSC";
-        "GGT041"="Vm7AQ2Ld";
-        "GGT042"="R4tHZ8Mn";
-        "GGT043"="Ck9SWp52";
-        "GGT044"="Hs3AJq8T";
-        "GGT045"="Nf6HRx4B";
-        "GGT046"="Td8SLm2Q";
-        "GGT047"="Yp4AVc7K";
-        "GGT048"="Mb2HHs9R";
-        "GGT049"="Qx7SDn5J";
-        "GGT050"="Gj8APf3W";
-        "GGT051"="Kr5HTy6M";
-        "GGT052"="Lc9SBb4N";
-        "GGT053"="Za3AXm8P";
-        "GGT054"="Wu6HQe2H";
-        "GGT055"="Dn4SJr7C";
-        "GGT056"="Fb8ANk5S";
-        "GGT057"="Hp2HZv9L";
-        "GGT058"="Mt7SQg4D";
-        "GGT059"="Rx5ACc8V";
-        "GGT060"="Js9HLm3A";
-        "GGT061"="Pk4STw6E";
-        "GGT062"="By7AHd2U";
-        "GGT063"="Ne3HQk8G";
-        "GGT064"="Uf6SRp5X";
-        "GGT065"="Cm8AZj4T";
-        "GGT066"="Wx2HBn9F";
-        "GGT067"="Hr7SLd3Y";
-        "GGT068"="Qg5AVs8K";
-        "GGT069"="Ta4HMf6R";
-        "GGT190"="Yk9SCp2W";
-        "GGT200"="Rb6AHx7N";
-        "GGT201"="Sd3HJv8Q";
-        "GGR037"="EtdY37A6";
-        "GGR038"="Lq8N2HPa";
-        "GGR039"="EoD98kSK";
-        "GGR040"="PjH83HSC";
-        "GGR041"="Vm7AQ2Ld";
-        "GGR042"="R4tHZ8Mn";
-        "GGR043"="Ck9SWp52";
-        "GGR044"="Hs3AJq8T";
-        "GGR045"="Nf6HRx4B";
-        "GGR046"="Td8SLm2Q";
-        "GGR047"="Yp4AVc7K";
-        "GGR048"="Mb2HHs9R";
-        "GGR049"="Qx7SDn5J";
-        "GGR050"="Gj8APf3W";
-        "GGR051"="Kr5HTy6M";
-        "GGR052"="Lc9SBb4N";
-        "GGR053"="Za3AXm8P";
-        "GGR054"="Wu6HQe2H";
-        "GGR055"="Dn4SJr7C";
-        "GGR056"="Fb8ANk5S";
-        "GGR057"="Hp2HZv9L";
-        "GGR058"="Mt7SQg4D";
-        "GGR059"="Rx5ACc8V";
-        "GGR060"="Js9HLm3A";
-        "GGR061"="Pk4STw6E";
-        "GGR062"="By7AHd2U";
-        "GGR063"="Ne3HQk8G";
-        "GGR064"="Uf6SRp5X";
-        "GGR065"="Cm8AZj4T";
-        "GGR066"="Wx2HBn9F";
-        "GGR067"="Hr7SLd3Y";
-        "GGR068"="Qg5AVs8K";
-        "GGR069"="Ta4HMf6R";
-        "GGR190"="Yk9SCp2W";
-        "GGR200"="Rb6AHx7N";
-        "GGR201"="Sd3HJv8Q";
-        "GGM"="Maintenanc30nly.";
-        "GGI"="4GGIaccess."
-    }
+    :local wirelesSecurityProfiles $dataSetMapPSKWirelessSecurityProfiles
 
     :local enforceIdentity15 do={
         :local identity [/system identity get name]

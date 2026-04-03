@@ -1,6 +1,13 @@
-# Version: 202504071112
-# Script Name: MMS-getHostname  Please enter the correct hostname (15 characters): 
+# MikroTik Management Scripts
+# MMS Version: 0.01 Testing
 {
+    # MMS Version: 0.01
+    # Script Version: 202504071112
+    # Script Name: MMS-getHostname
+    # Description: Prompts for and validates a device hostname, then stores it globally.
+    # Author: Kenneth G. Tipton
+    # Date: 2025-04-07
+
     global hostname
     # Get hostname function - Prompts user for a hostname, verifies it, and sets the global variable $hostname
     local getHostname do={

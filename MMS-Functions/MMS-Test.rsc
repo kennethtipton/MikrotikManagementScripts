@@ -1,4 +1,13 @@
+# MikroTik Management Scripts
+# MMS Version: 0.01 Testing
 {
+    # MMS Version: 0.01
+    # Script Version: 202604031200
+    # Script Name: MMS-Test
+    # Description: Test script for MMS functions and terminal output.
+    # Author: Kenneth G. Tipton
+    # Date: 2026-04-03
+
     :global cls
     :local displayLogo do={
         # Display the logo and instructions

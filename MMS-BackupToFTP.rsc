@@ -1,3 +1,5 @@
+# MikroTik Management Scripts
+# MMS Version: 0.01 Testing
 # Version: 202504021153              
 # Script Name: MMS-SBackupToFTP
 # Script file created by Kenneth Tipton
@@ -6,56 +8,72 @@
 # Used to create two backup files of device and store on ftp server
 # Also used to backup device certificates
 {
-    # Remove Old Backup Files
+    # Startup
     :log info "Starting Automatic Backup Script"
     :log info "Removing Old Backup Files"
 
+    # Script constants
     :log info "Seting Backup Scripts Constants"
     :global deviceHostname
     :global deviceIPDesinator
     :global ftpBackupServer
-    :local serverport 21
-    :local ftpuser $deviceHostname
-    # Get Password stored in /ppp secrets
-    :local ftpPassword [/ppp secret get [/ppp secret find name=$ftpuser] password]
-    :local certificatePassphrase  [/ppp secret get [/ppp secret find name="certificatePassword"] password]
-    :local certtype "pkcs12"
-    :local thisdate [/system clock get date]
-    :local thistime [/system clock get time]
-    :local datetimestring ([:pick $thisdate 0 4] . [:pick $thisdate 5 7] . [:pick $thisdate 8 12])
-    :local timetimestring ([:pick $thistime 0 2] . [:pick $thistime 3 5] . [:pick $thistime 6 8])
-    :local backupfilename ("BACKUP-".$deviceHostname."-".$datetimestring."-".$timetimestring)
 
-    :local scriptFile ("$backupfilename.rsc")
-    :local backupFile ("$backupfilename.backup")
-    
-    # Create a local copy of restore script file
-    :log info "Exporting Restore Script to $backupfilename"
-    /export file=$backupfilename show-sensitive
+    :local ftpUser $deviceHostname
+    :local ftpPassword [/ppp secret get [/ppp secret find name=$ftpUser] password]
+    :local certificatePassphrase [/ppp secret get [/ppp secret find name="certificatePassword"] password]
+    :local certType "pkcs12"
+    :local thisDate [/system clock get date]
+    :local thisTime [/system clock get time]
+    :local dateTimeString ([:pick $thisDate 0 4] . [:pick $thisDate 5 7] . [:pick $thisDate 8 12])
+    :local timeTimeString ([:pick $thisTime 0 2] . [:pick $thisTime 3 5] . [:pick $thisTime 6 8])
+    :local backupFileName ("BACKUP-" . $deviceHostname . "-" . $dateTimeString . "-" . $timeTimeString)
+
+    :local scriptFile ($backupFileName . ".rsc")
+    :local backupFile ($backupFileName . ".backup")
+
+    # Create local backup files
+    :log info "Exporting Restore Script to $backupFileName"
+    /export file=$backupFileName show-sensitive
     :delay 5s
-    # Create a local copy of Mikrotik backup file
-    :log info "Saving Backup file to $backupfilename"
-    /system backup save name=("$backupfilename")
+
+    :log info "Saving Backup file to $backupFileName"
+    /system backup save name=$backupFileName
     :delay 5s
-    
+
+    # Export local certificates
     :log info "Backup of Local Certificates"
-    :foreach certname in=[/certificate find] do={
-        :local name [/certificate get $certname name]
-        :do { /certificate export-certificate [find name=$"name"] export-passphrase="$passphrase" type="$certtype" }
+    :foreach certId in=[/certificate find] do={
+        :local certName [/certificate get $certId name]
+        /certificate export-certificate [find name=$certName] export-passphrase=$certificatePassphrase type=$certType
     }
 
-    # Store System configuration on ftp server
-    /tool fetch address=$ftpBackupServer src-path=$scriptFile user=$ftpuser mode=ftp password=$ftpPassword dst-path="/$scriptFile" upload=yes
+    # Upload backup files
+    /tool fetch \
+        address=$ftpBackupServer \
+        src-path=$scriptFile \
+        user=$ftpUser \
+        mode=ftp \
+        password=$ftpPassword \
+        dst-path=("/" . $scriptFile) \
+        upload=yes
     :delay 10
-    /tool fetch address=$ftpBackupServer src-path=$backupFile user=$ftpuser mode=ftp password=$ftpPassword dst-path="/$backupFile" upload=yes
+
+    /tool fetch \
+        address=$ftpBackupServer \
+        src-path=$backupFile \
+        user=$ftpUser \
+        mode=ftp \
+        password=$ftpPassword \
+        dst-path=("/" . $backupFile) \
+        upload=yes
     :delay 10
-    # Remove local copy of restore script file
+
+    # Remove local backup files
     :if ([:len [/file find name="$backupFile"]]) do={
         /file remove [find name="$backupFile"]
     }
-    # Remove local copy of backup file
+
     :if ([:len [/file find name="$scriptFile"]]) do={
         /file remove [find name="$scriptFile"]
     }
-
 }

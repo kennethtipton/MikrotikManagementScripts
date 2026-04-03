@@ -1,3 +1,5 @@
+# MikroTik Management Scripts
+# MMS Version: 0.01 Testing
 # Version: 202504021153
 # Script Name: MMS-SystemVariables
 # Script file created by Kenneth Tipton

@@ -1,3 +1,5 @@
+# MikroTik Management Scripts
+# MMS Version: 0.01 Testing
 {    
     # Key variable for entire script
     global hostName [/system identity get name]

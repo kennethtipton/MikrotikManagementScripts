@@ -1,4 +1,13 @@
+# MikroTik Management Scripts
+# MMS Version: 0.01 Testing
 {
+    # MMS Version: 0.01
+    # Script Version: 202604031200
+    # Script Name: MMS-displayLogo
+    # Description: Displays the MMS logo and instructions in the terminal.
+    # Author: Kenneth G. Tipton
+    # Date: 2026-04-03
+
     :global displayLogo do={
         # Display the logo and instructions
         :local cls

@@ -1,6 +1,9 @@
+# MikroTik Management Scripts
+# MMS Version: 0.01 Testing
 {
     # Setup global variable ftpScript server if MMS-SystemVariables.rsc hans never beem executed
     :global ftpScriptServer
+    :global getHeaderValue
     :if (:len[ftpScriptServer] = 0) {
         :set ftpScriptServer "srv010010037045.generationsgaither.com"
     }
@@ -32,8 +35,15 @@
                 :delay 5
                 :if ([:len [/file find name="$destinationFile"]] > 0) do={
                     :local cont [/file get $destinationFile contents]
-                    :set $destinationFileVersion [$getVersion fileContent="$cont"]
-                    :set $destinationFileScriptName [$getScriptName fileContent="$cont"]                    
+                    :local destinationFileVersionText [$getHeaderValue $cont "# Script Version:"]
+                    :if ([:len $destinationFileVersionText] = 0) do={
+                        :set destinationFileVersionText [$getHeaderValue $cont "# Version:"]
+                    }
+                    :local destinationFileVersionTmp [:tonum $destinationFileVersionText]
+                    :if ([:typeof $destinationFileVersionTmp] != "nil") do={
+                        :set $destinationFileVersion $destinationFileVersionTmp
+                    }
+                    :set $destinationFileScriptName [$getHeaderValue $cont "# Script Name:"]
                 } else={
                     :log info "$destinationFile does not exist"
                     :return $setupFileFromHasError
@@ -45,7 +55,14 @@
                     # /system script run installScripts
                 } else={
                     :set $cont [ /system/script/get [/system/script find where name=$destinationFileScriptName] source]
-                    :set $storedScriptVersion [$getFileVersion filecontent="$cont"]
+                    :local storedScriptVersionText [$getHeaderValue $cont "# Script Version:"]
+                    :if ([:len $storedScriptVersionText] = 0) do={
+                        :set storedScriptVersionText [$getHeaderValue $cont "# Version:"]
+                    }
+                    :local storedScriptVersionTmp [:tonum $storedScriptVersionText]
+                    :if ([:typeof $storedScriptVersionTmp] != "nil") do={
+                        :set $storedScriptVersion $storedScriptVersionTmp
+                    }
                 }
             }
             :if ($serverType = "http" and $loginRequired = "false") do={
@@ -55,7 +72,14 @@
                 :delay 5
                 :if ([:len [/file find name="$destinationFilename"]] > 0) do={
                     :local cont [/file get $destinationFilename contents]
-                    :set $destinationFileVersion [$getVersion fileContent="$cont"]
+                    :local destinationFileVersionText [$getHeaderValue $cont "# Script Version:"]
+                    :if ([:len $destinationFileVersionText] = 0) do={
+                        :set destinationFileVersionText [$getHeaderValue $cont "# Version:"]
+                    }
+                    :local destinationFileVersionTmp [:tonum $destinationFileVersionText]
+                    :if ([:typeof $destinationFileVersionTmp] != "nil") do={
+                        :set $destinationFileVersion $destinationFileVersionTmp
+                    }
                 } else={
                     :log info "$destinationFile does not exist"
                     :return $setupFileFromHasError
@@ -191,7 +215,7 @@
     }
     }
     # Script file version
-    :global getFileVersion
+    :global getHeaderValue
 
     :global getStoredScriptVersion
 

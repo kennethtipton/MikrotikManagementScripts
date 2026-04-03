@@ -1,0 +1,4 @@
+dataSetMapDeviceLocationAtSite.rsc
+dataSetMapDeviceType.rsc
+dataSetMapLocationBase.rsc
+dataSetMapCompanyAbbreviation.rsc

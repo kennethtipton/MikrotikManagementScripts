@@ -1,4 +1,27 @@
 {
+    "files.associations": {
+        "*.rsc": "routeros"
+    },
+    "[routeros]": {
+        "editor.defaultFormatter": "tikoci.lsp-routeros-ts",
+        "editor.semanticHighlighting.enabled": false
+    },
+    "editor.tokenColorCustomizations": {
+        "textMateRules": [
+            {
+                "scope": [
+                    "comment",
+                    "comment.line",
+                    "comment.block",
+                    "comment.line.number-sign",
+                    "comment.line.number-sign.routeros"
+                ],
+                "settings": {
+                    "foreground": "#00FF00"
+                }
+            }
+        ]
+    },
     "remote.SSH.httpProxy": "",
     "routeroslsp.baseUrl": "http://10.10.200.1",
     "routeroslsp.password": "3$'saday.",
