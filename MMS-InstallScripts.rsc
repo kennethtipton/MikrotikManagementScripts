@@ -1,12 +1,16 @@
+# ===================================================================
 # MikroTik Management Scripts
 # MMS Version: 0.01 Testing
-# Version: 202504031357
-# Script Name: MMS-InstallScripts
-# Script file created by Kenneth Tipton
-# Telecommunications Networking and Computing, Inc.
 #
-# Used to install and update mangement scripts and schedule them.
-# Also use to update initial setup script
+# Script Version: 20260403154154
+# Script Filename: MMS-InstallScripts.rsc
+# Stored Script Name: MMS-InstallScripts
+# Description: Used to install and update management scripts and schedule them.
+# Author: Kenneth G. Tipton
+# Date: 2026-04-03
+# Time: 15:41:54
+# used AI tools: GitHub Copilot (GPT-5.3-Codex)
+# ===================================================================
 {
     :log info "Install/Update Mikrotik Management Scripts"
     :local secretName "MikrotikScripts"

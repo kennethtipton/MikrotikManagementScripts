@@ -1,11 +1,16 @@
+# ===================================================================
 # MikroTik Management Scripts
 # MMS Version: 0.01 Testing
-# Script Name: dataSetMapCompanyAbbreviation.rsc
+#
+# Script Version: 20260403154154
+# Script Filename: dataSetMapCompanyAbbreviation.rsc
+# Stored Script Name: dataSetMapCompanyAbbreviation
 # Description: Dataset map of company abbreviations to normalized company names.
 # Author: Kenneth G. Tipton
-# Date: 2026-04-02
-# Version: 202604021700
-
+# Date: 2026-04-03
+# Time: 15:41:54
+# used AI tools: GitHub Copilot (GPT-5.3-Codex)
+# ===================================================================
 :global dataSetMapCompanyAbbreviation [:toarray ""]
 :set ($dataSetMapCompanyAbbreviation->"GGI") "GENERATIONS_GAITHER_INC"
 :set ($dataSetMapCompanyAbbreviation->"GHA") "GENERATIONS_HEALTH_ASSOCIATION"

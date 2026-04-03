@@ -1,12 +1,16 @@
+# ===================================================================
 # MikroTik Management Scripts
 # MMS Version: 0.01 Testing
-# Version: 202504021153              
-# Script Name: MMS-SBackupToFTP
-# Script file created by Kenneth Tipton
-# Telecommunications Networking and Computing, Inc.
 #
-# Used to create two backup files of device and store on ftp server
-# Also used to backup device certificates
+# Script Version: 20260403154154
+# Script Filename: MMS-BackupToFTP.rsc
+# Stored Script Name: MMS-SBackupToFTP
+# Description: Used to create two backup files of device and store on ftp server.
+# Author: Kenneth G. Tipton
+# Date: 2026-04-03
+# Time: 15:41:54
+# used AI tools: GitHub Copilot (GPT-5.3-Codex)
+# ===================================================================
 {
     # Startup
     :log info "Starting Automatic Backup Script"

@@ -1,12 +1,17 @@
+# ===================================================================
 # MikroTik Management Scripts
 # MMS Version: 0.01 Testing
+#
+# Script Version: 20260403154154
+# Script Filename: MMS-dataSetMapSync.rsc
+# Stored Script Name: MMS-dataSetMapSync
+# Description: Downloads from ftp server the file dataSetMaps/dataSetMapFileManifest.rsc first, imports it, then downloads all dataSetMap files listed in it.
+# Author: Kenneth G. Tipton
+# Date: 2026-04-03
+# Time: 15:41:54
+# used AI tools: GitHub Copilot (GPT-5.3-Codex)
+# ===================================================================
 {
-    # MMS Version: 0.09
-    # Script Version: 202604021830
-    # Script Name: MMS-dataSetMapSync
-    # Description: Downloads from ftp server the file dataSetMaps/dataSetMapFileManifest.txt first, then downloads all dataSetMap listed in it.
-    # Author: Kenneth G. Tipton
-    # Date: 2026-03-31
     # Set to true to suppress screen output; set to false to enable verbose screen output.
     :local silent true
 
@@ -29,8 +34,9 @@
     }
 
     # Function: downloadDataSetMaps
-    # Syncs dataSetMapFileManifest.txt from FTP first, then reads it to determine which
-    # dataSetMap files to download. All files are stored in the dataSets/ subfolder on the device.
+    # Syncs dataSetMapFileManifest.rsc from FTP first, imports it to populate the
+    # dataSetMapFileManifest array (FILE001, FILE002...), then downloads all listed files.
+    # All files are stored in the dataSets/ subfolder on the device.
 
     :global downloadDataSetMaps do={
         :local user "mikrotikscripts"
@@ -48,7 +54,7 @@
         :local password [/ppp secret get $id password]
         :local remotePath "dataSetMaps/"
         :local localPath "dataSets/"
-        :local manifestFile "dataSetMapFileManifest.txt"
+        :local manifestFile "dataSetMapFileManifest.rsc"
         :local localManifest ($localPath . $manifestFile)
 
         :if (!$silent) do={ :put ("Starting downloadDataSetMaps for user '" . $user . "' from server '" . $server . "'.") }
@@ -85,62 +91,48 @@
             :error "Failed to fetch dataSetMapFileManifest.txt"
         }
 
-        # --- Step 2: Parse manifest and delete existing local dataSetMap files ---
-        :local content [/file get $localManifest contents]
-        :local contentLen [:len $content]
-        :local pos 0
-        :while ($pos < $contentLen) do={
-            :local nlPos [:find $content "\n" $pos]
-            :if ([:typeof $nlPos] = "nil") do={ :set nlPos $contentLen }
-            :local line [:pick $content $pos $nlPos]
-            # Trim trailing \r for Windows line endings
-            :if ([:len $line] > 0 && [:pick $line ([:len $line] - 1) [:len $line]] = "\r") do={
-                :set line [:pick $line 0 ([:len $line] - 1)]
+        # --- Step 2: Import manifest RSC to populate dataSetMapFileManifest array ---
+        :do {
+            /import file-name=$localManifest
+        } on-error={
+            :log error ("downloadDataSetMaps: ERROR: Failed to import manifest.")
+            :if (!$silent) do={ :put ("ERROR: Failed to import manifest.") }
+            :error "Failed to import dataSetMapFileManifest.rsc"
+        }
+        :global dataSetMapFileManifest
+
+        # --- Step 3: Delete existing local dataSetMap files ---
+        :foreach fileName in=$dataSetMapFileManifest do={
+            :local localFile ($localPath . $fileName)
+            :if ([:len [/file find name=$localFile]] > 0) do={
+                :log info ("downloadDataSetMaps: Deleting existing file: " . $localFile)
+                :if (!$silent) do={ :put ("Deleting existing file: " . $localFile) }
+                /file remove [find name=$localFile]
             }
-            :if ([:len $line] > 0) do={
-                :local localFile ($localPath . $line)
-                :if ([:len [/file find name=$localFile]] > 0) do={
-                    :log info ("downloadDataSetMaps: Deleting existing file: " . $localFile)
-                    :if (!$silent) do={ :put ("Deleting existing file: " . $localFile) }
-                    /file remove [find name=$localFile]
-                }
-            }
-            :set pos ($nlPos + 1)
         }
 
-        # --- Step 3: Download each dataSetMap file listed in the manifest ---
-        :set pos 0
+        # --- Step 4: Download each dataSetMap file from FTP ---
         :local fileCount 0
-        :while ($pos < $contentLen) do={
-            :local nlPos [:find $content "\n" $pos]
-            :if ([:typeof $nlPos] = "nil") do={ :set nlPos $contentLen }
-            :local line [:pick $content $pos $nlPos]
-            # Trim trailing \r for Windows line endings
-            :if ([:len $line] > 0 && [:pick $line ([:len $line] - 1) [:len $line]] = "\r") do={
-                :set line [:pick $line 0 ([:len $line] - 1)]
+        :foreach fileName in=$dataSetMapFileManifest do={
+            :local localFile ($localPath . $fileName)
+            :local srcPath ("/" . $remotePath . $fileName)
+            :if (!$silent) do={ :put ("Downloading: " . $srcPath . " -> " . $localFile) }
+            :do {
+                /tool fetch \
+                    address=$server \
+                    user=$user \
+                    password=$password \
+                    src-path=$srcPath \
+                    dst-path=$localFile \
+                    mode=ftp \
+                    keep-result=yes
+                :set fileCount ($fileCount + 1)
+                :log info ("downloadDataSetMaps: SUCCESS: " . $localFile)
+                :if (!$silent) do={ :put ("SUCCESS: Downloaded: " . $localFile) }
+            } on-error={
+                :log error ("downloadDataSetMaps: ERROR: Failed to download: " . $srcPath)
+                :if (!$silent) do={ :put ("ERROR: Failed to download: " . $srcPath) }
             }
-            :if ([:len $line] > 0) do={
-                :local localFile ($localPath . $line)
-                :local srcPath ("/" . $remotePath . $line)
-                :if (!$silent) do={ :put ("Downloading: " . $srcPath . " -> " . $localFile) }
-                :do {
-                    /tool fetch \
-                        address=$server \
-                        user=$user \
-                        password=$password \
-                        src-path=$srcPath \
-                        dst-path=$localFile \
-                        mode=ftp \
-                        keep-result=yes
-                    :set fileCount ($fileCount + 1)
-                    :log info ("downloadDataSetMaps: SUCCESS: " . $localFile)
-                    :if (!$silent) do={ :put ("SUCCESS: Downloaded: " . $localFile) }
-                } on-error={
-                    :log error ("downloadDataSetMaps: ERROR: Failed to download: " . $srcPath)
-                    :if (!$silent) do={ :put ("ERROR: Failed to download: " . $srcPath) }
-                }
-            }
-            :set pos ($nlPos + 1)
         }
 
         :log info ("downloadDataSetMaps: Complete. " . $fileCount . " file(s) downloaded from server '" . $server . "'.")

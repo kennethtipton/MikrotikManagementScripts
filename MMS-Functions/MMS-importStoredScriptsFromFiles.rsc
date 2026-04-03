@@ -1,13 +1,17 @@
+# ===================================================================
 # MikroTik Management Scripts
 # MMS Version: 0.01 Testing
+#
+# Script Version: 20260403154154
+# Script Filename: MMS-importStoredScriptsFromFiles.rsc
+# Stored Script Name: MMS-importStoredScriptsFromFiles
+# Description: Imports MMS .rsc files into stored scripts, updating only when file header version is newer and setting script comment from header description.
+# Author: Kenneth G. Tipton
+# Date: 2026-04-03
+# Time: 15:41:54
+# used AI tools: GitHub Copilot (GPT-5.3-Codex)
+# ===================================================================
 {
-    # MMS Version: 0.01
-    # Script Version: 202604031110
-    # Script Name: MMS-importStoredScriptsFromFiles
-    # Description: Imports MMS .rsc files into stored scripts, updating only when file header version is newer and setting script comment from header description.
-    # Author: Kenneth G. Tipton
-    # Date: 2026-04-03
-
     # Import/refresh RouterOS stored scripts from on-device script files whose names start with MMS.
     # Script name is taken from the file header line: # Script Name: <name>
     # Existing stored scripts are updated only if file header # Script Version: is newer.

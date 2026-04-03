@@ -1,10 +1,16 @@
+# ===================================================================
 # MikroTik Management Scripts
 # MMS Version: 0.01 Testing
-# 2025-07-11 10:40:26 by RouterOS 7.19.3
-# software id = PY7C-J2IS
 #
-# model = RBcAPGi-5acD2nD
-# serial number = B9330B0D70C6
+# Script Version: 20260403154154
+# Script Filename: acp010010037007.rsc
+# Stored Script Name: acp010010037007
+# Description: RouterOS export for device acp010010037007.
+# Author: Kenneth G. Tipton
+# Date: 2026-04-03
+# Time: 15:41:54
+# used AI tools: GitHub Copilot (GPT-5.3-Codex)
+# ===================================================================
 /caps-man configuration
 add country="united states3" distance=indoors installation=indoor mode=ap \
     name=GHA ssid=GHA

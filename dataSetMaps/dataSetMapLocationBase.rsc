@@ -1,11 +1,16 @@
+# ===================================================================
 # MikroTik Management Scripts
 # MMS Version: 0.01 Testing
-# Script Name: dataSetMapLocationBase.rsc
+#
+# Script Version: 20260403154154
+# Script Filename: dataSetMapLocationBase.rsc
+# Stored Script Name: dataSetMapLocationBase
 # Description: Dataset map of site number (octet 3) to fully qualified base site location name.
 # Author: Kenneth G. Tipton
-# Date: 2026-04-02
-# Version: 202604021513
-
+# Date: 2026-04-03
+# Time: 15:41:54
+# used AI tools: GitHub Copilot (GPT-5.3-Codex)
+# ===================================================================
 :global dataSetMapLocationBase [:toarray ""]
 :set ($dataSetMapLocationBase->"035") "GGI.TN.MCMINNVILLE.CAMPUS-NORTH_SPRING_STREET.GYM-GARAGE"
 :set ($dataSetMapLocationBase->"037") "GGI.TN.MCMINNVILLE.CAMPUS-NORTH_SPRING_STREET"

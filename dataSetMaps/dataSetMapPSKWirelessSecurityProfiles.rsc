@@ -1,11 +1,16 @@
+# ===================================================================
 # MikroTik Management Scripts
 # MMS Version: 0.01 Testing
-# Script Name: dataSetMapPSKWirelessSecurityProfiles.rsc
+#
+# Script Version: 20260403154154
+# Script Filename: dataSetMapPSKWirelessSecurityProfiles.rsc
+# Stored Script Name: dataSetMapPSKWirelessSecurityProfiles
 # Description: Dataset map of wireless security profile names to PSK passwords.
 # Author: Kenneth G. Tipton
-# Date: 2026-04-02
-# Version: 202604021725
-
+# Date: 2026-04-03
+# Time: 15:41:54
+# used AI tools: GitHub Copilot (GPT-5.3-Codex)
+# ===================================================================
 :global dataSetMapPSKWirelessSecurityProfiles [:toarray ""]
 :set ($dataSetMapPSKWirelessSecurityProfiles->"GGI") "4GGIaccess."
 :set ($dataSetMapPSKWirelessSecurityProfiles->"GGM") "2Get2Internet."

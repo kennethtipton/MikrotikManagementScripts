@@ -1,13 +1,17 @@
+# ===================================================================
 # MikroTik Management Scripts
 # MMS Version: 0.01 Testing
+#
+# Script Version: 20260403154154
+# Script Filename: MMS-getPasswordFromPPP.rsc
+# Stored Script Name: MMS-getPasswordFromPPP
+# Description: Retrieves a password from MikroTik PPP secrets by name.
+# Author: Kenneth G. Tipton
+# Date: 2026-04-03
+# Time: 15:41:54
+# used AI tools: GitHub Copilot (GPT-5.3-Codex)
+# ===================================================================
 {
-    # MMS Version: 0.01
-    # Script Version: 202504071112
-    # Script Name: MMS-getPasswordFromPPP
-    # Description: Retrieves a password from MikroTik PPP secrets by name.
-    # Author: Kenneth G. Tipton
-    # Date: 2025-04-07
-
     # Get the Password stored in Mikrotik /ppp/secrets
     # example: first store name and password "/ppp/secrets add name=MikrotikScripts password="Something Secret"
     # then use :set $password [$getPasswordFromPPP name="MikrotikScripts"] to retreive password

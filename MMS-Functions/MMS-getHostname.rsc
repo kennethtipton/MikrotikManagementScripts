@@ -1,13 +1,17 @@
+# ===================================================================
 # MikroTik Management Scripts
 # MMS Version: 0.01 Testing
+#
+# Script Version: 20260403154154
+# Script Filename: MMS-getHostname.rsc
+# Stored Script Name: MMS-getHostname
+# Description: Prompts for and validates a device hostname, then stores it globally.
+# Author: Kenneth G. Tipton
+# Date: 2026-04-03
+# Time: 15:41:54
+# used AI tools: GitHub Copilot (GPT-5.3-Codex)
+# ===================================================================
 {
-    # MMS Version: 0.01
-    # Script Version: 202504071112
-    # Script Name: MMS-getHostname
-    # Description: Prompts for and validates a device hostname, then stores it globally.
-    # Author: Kenneth G. Tipton
-    # Date: 2025-04-07
-
     global hostname
     # Get hostname function - Prompts user for a hostname, verifies it, and sets the global variable $hostname
     local getHostname do={

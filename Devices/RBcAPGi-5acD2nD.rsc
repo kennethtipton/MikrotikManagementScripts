@@ -1,5 +1,16 @@
+# ===================================================================
 # MikroTik Management Scripts
 # MMS Version: 0.01 Testing
+#
+# Script Version: 20260403154154
+# Script Filename: RBcAPGi-5acD2nD.rsc
+# Stored Script Name: RBcAPGi-5acD2nD
+# Description: Device-specific RouterOS script template for RBcAPGi-5acD2nD provisioning.
+# Author: Kenneth G. Tipton
+# Date: 2026-04-03
+# Time: 15:41:54
+# used AI tools: GitHub Copilot (GPT-5.3-Codex)
+# ===================================================================
 {    
     # Key variable for entire script
     global hostName [/system identity get name]

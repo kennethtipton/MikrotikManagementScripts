@@ -1,13 +1,17 @@
+# ===================================================================
 # MikroTik Management Scripts
 # MMS Version: 0.01 Testing
+#
+# Script Version: 20260403154154
+# Script Filename: MMS-getHeaderValue.rsc
+# Stored Script Name: MMS-getHeaderValue
+# Description: Gets a header value from a script file or stored script header by marker.
+# Author: Kenneth G. Tipton
+# Date: 2026-04-03
+# Time: 15:41:54
+# used AI tools: GitHub Copilot (GPT-5.3-Codex)
+# ===================================================================
 {
-    # MMS Version: 0.01
-    # Script Version: 202604031200
-    # Script Name: MMS-getHeaderValue
-    # Description: Gets a header value from a script file or stored script header by marker.
-    # Author: Kenneth G. Tipton
-    # Date: 2026-04-03
-
     # Get a header value from the header of a script file (.rsc) or stored script.
     # example: :set $scriptName [$getHeaderValue $cont "# Script Name:"]
     :global getHeaderValue do={

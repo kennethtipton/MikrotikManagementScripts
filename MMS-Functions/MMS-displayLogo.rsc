@@ -1,13 +1,17 @@
+# ===================================================================
 # MikroTik Management Scripts
 # MMS Version: 0.01 Testing
+#
+# Script Version: 20260403154154
+# Script Filename: MMS-displayLogo.rsc
+# Stored Script Name: MMS-displayLogo
+# Description: Displays the MMS logo and instructions in the terminal.
+# Author: Kenneth G. Tipton
+# Date: 2026-04-03
+# Time: 15:41:54
+# used AI tools: GitHub Copilot (GPT-5.3-Codex)
+# ===================================================================
 {
-    # MMS Version: 0.01
-    # Script Version: 202604031200
-    # Script Name: MMS-displayLogo
-    # Description: Displays the MMS logo and instructions in the terminal.
-    # Author: Kenneth G. Tipton
-    # Date: 2026-04-03
-
     :global displayLogo do={
         # Display the logo and instructions
         :local cls

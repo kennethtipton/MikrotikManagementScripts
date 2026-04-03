@@ -1,6 +1,16 @@
+# ===================================================================
 # MikroTik Management Scripts
 # MMS Version: 0.01 Testing
-
+#
+# Script Version: 20260403154154
+# Script Filename: WirelessSSID copy.rsc
+# Stored Script Name: WirelessSSID copy
+# Description: Legacy copy of wireless SSID setup logic retained for reference and comparison.
+# Author: Kenneth G. Tipton
+# Date: 2026-04-03
+# Time: 15:41:54
+# used AI tools: GitHub Copilot (GPT-5.3-Codex)
+# ===================================================================
 {
     # setup Variables and lookup maps
     :global hostName

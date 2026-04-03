@@ -1,5 +1,16 @@
+# ===================================================================
 # MikroTik Management Scripts
 # MMS Version: 0.01 Testing
+#
+# Script Version: 20260403154154
+# Script Filename: MMS-Functions.rsc
+# Stored Script Name: MMS-Functions
+# Description: Core helper routines for fetching, comparing, and updating MMS scripts on the device.
+# Author: Kenneth G. Tipton
+# Date: 2026-04-03
+# Time: 15:41:54
+# used AI tools: GitHub Copilot (GPT-5.3-Codex)
+# ===================================================================
 {
     # Setup global variable ftpScript server if MMS-SystemVariables.rsc hans never beem executed
     :global ftpScriptServer

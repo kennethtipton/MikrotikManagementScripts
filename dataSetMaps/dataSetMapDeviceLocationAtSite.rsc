@@ -1,12 +1,16 @@
+# ===================================================================
 # MikroTik Management Scripts
 # MMS Version: 0.01 Testing
-
-# Script Name: dataSetMapDeviceLocationAtSite.rsc
+#
+# Script Version: 20260403154154
+# Script Filename: dataSetMapDeviceLocationAtSite.rsc
+# Stored Script Name: dataSetMapDeviceLocationAtSite
 # Description: Dataset map of full device hostname to device location at the site.
 # Author: Kenneth G. Tipton
-# Date: 2026-04-02
-# Version: 202604021513
-
+# Date: 2026-04-03
+# Time: 15:41:54
+# used AI tools: GitHub Copilot (GPT-5.3-Codex)
+# ===================================================================
 :global dataSetMapDeviceLocationAtSite [:toarray ""]
 :set ($dataSetMapDeviceLocationAtSite->"rtr010010035002024") "DATA_CABINET"
 :set ($dataSetMapDeviceLocationAtSite->"rtr010010035003024") "DATA_CABINET"

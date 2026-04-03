@@ -1,13 +1,17 @@
+# ===================================================================
 # MikroTik Management Scripts
 # MMS Version: 0.01 Testing
+#
+# Script Version: 20260403154154
+# Script Filename: MMS-InitializeVariables.rsc
+# Stored Script Name: MMS-InitializeVariables
+# Description: Initializes global variables commonly used in Mikrotik RouterOS scripts.
+# Author: Kenneth G. Tipton
+# Date: 2026-04-03
+# Time: 15:41:54
+# used AI tools: GitHub Copilot (GPT-5.3-Codex)
+# ===================================================================
 {
-    # MMS Version: 0.01
-    # Script Version: 202604021543
-    # Script Name: MMS-InitializeVariables
-    # Description: Initializes global variables commonly used in Mikrotik RouterOS scripts.
-    # Author: Kenneth G. Tipton
-    # Date: 2026-03-31
-
     # Data Mapping and Variable Initialization Script for Mikrotik RouterOS
 
     # Set to true to suppress screen output, false to show common variable values.

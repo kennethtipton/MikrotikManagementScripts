@@ -1,13 +1,17 @@
+# ===================================================================
 # MikroTik Management Scripts
 # MMS Version: 0.01 Testing
+#
+# Script Version: 20260403154154
+# Script Filename: MMS-InitializePSKWirelesSecurityProfiles.rsc
+# Stored Script Name: MMS-InitializePSKWirelesSecurityProfiles
+# Description: Creates PSK wireless security profiles for the current access point from the downloaded dataset map.
+# Author: Kenneth G. Tipton
+# Date: 2026-04-03
+# Time: 15:41:54
+# used AI tools: GitHub Copilot (GPT-5.3-Codex)
+# ===================================================================
 {
-    # MMS Version: 0.01
-    # Script Version: 202604021815
-    # Script Name: MMS-InitializePSKWirelesSecurityProfiles
-    # Description: Creates PSK wireless security profiles for the current access point from the downloaded dataset map.
-    # Author: Kenneth G. Tipton
-    # Date: 2026-04-02
-
     # Set to true to suppress screen output; set to false for status output.
     :global silent false
     :global baseSiteLocationNumber
