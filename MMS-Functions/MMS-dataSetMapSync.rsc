@@ -2,14 +2,14 @@
 # MikroTik Management Scripts
 # MMS Version: 0.01 Testing
 #
-# Script Version: 20260403154154
+# Script Version: 20260405124938
 # Script Filename: MMS-dataSetMapSync.rsc
 # Stored Script Name: MMS-dataSetMapSync
 # Description: Downloads from ftp server the file dataSetMaps/dataSetMapFileManifest.rsc first, imports it, then downloads all dataSetMap files listed in it.
 # Author: Kenneth G. Tipton
-# Date: 2026-04-03
-# Time: 15:41:54
-# used AI tools: GitHub Copilot (GPT-5.3-Codex)
+# Date: 2026-04-05
+# Time: 12:49:38
+# used AI tools: GitHub Copilot (GPT-5.4)
 # ===================================================================
 {
     # Set to true to suppress screen output; set to false to enable verbose screen output.
@@ -40,8 +40,14 @@
 
     :global downloadDataSetMaps do={
         :local user "mikrotikscripts"
+        :global MMSdownloadFileFromFTP
         :if ([:len $1] > 0) do={
             :set user $1
+        }
+        :if ([:typeof $MMSdownloadFileFromFTP] != "nil") do={
+        } else={
+            :log error "downloadDataSetMaps: MMSdownloadFileFromFTP is not loaded."
+            :error "MMSdownloadFileFromFTP is not loaded"
         }
         :local foundId [/ppp secret find name=$user]
         :if ([:len $foundId] = 0) do={
@@ -74,22 +80,14 @@
             /file remove [find name=$localManifest]
         }
         :if (!$silent) do={ :put ("Fetching manifest from server...") }
-        :do {
-            /tool fetch \
-                address=$server \
-                user=$user \
-                password=$password \
-                src-path=("/" . $remotePath . $manifestFile) \
-                dst-path=$localManifest \
-                mode=ftp \
-                keep-result=yes
-            :log info ("downloadDataSetMaps: Fetched manifest: " . $localManifest)
-            :if (!$silent) do={ :put ("SUCCESS: Fetched manifest: " . $localManifest) }
-        } on-error={
+        :local fetchResult [$MMSdownloadFileFromFTP $user ("/" . $remotePath . $manifestFile) $localManifest true $silent]
+        :if ($fetchResult = "failed") do={
             :log error ("downloadDataSetMaps: ERROR: Failed to fetch manifest.")
             :if (!$silent) do={ :put ("ERROR: Failed to fetch manifest.") }
             :error "Failed to fetch dataSetMapFileManifest.txt"
         }
+        :log info ("downloadDataSetMaps: Fetched manifest: " . $localManifest)
+        :if (!$silent) do={ :put ("SUCCESS: Fetched manifest: " . $localManifest) }
 
         # --- Step 2: Import manifest RSC to populate dataSetMapFileManifest array ---
         :do {
@@ -117,19 +115,12 @@
             :local localFile ($localPath . $fileName)
             :local srcPath ("/" . $remotePath . $fileName)
             :if (!$silent) do={ :put ("Downloading: " . $srcPath . " -> " . $localFile) }
-            :do {
-                /tool fetch \
-                    address=$server \
-                    user=$user \
-                    password=$password \
-                    src-path=$srcPath \
-                    dst-path=$localFile \
-                    mode=ftp \
-                    keep-result=yes
+            :local fileFetchResult [$MMSdownloadFileFromFTP $user $srcPath $localFile false $silent]
+            :if ($fileFetchResult != "failed") do={
                 :set fileCount ($fileCount + 1)
                 :log info ("downloadDataSetMaps: SUCCESS: " . $localFile)
                 :if (!$silent) do={ :put ("SUCCESS: Downloaded: " . $localFile) }
-            } on-error={
+            } else={
                 :log error ("downloadDataSetMaps: ERROR: Failed to download: " . $srcPath)
                 :if (!$silent) do={ :put ("ERROR: Failed to download: " . $srcPath) }
             }

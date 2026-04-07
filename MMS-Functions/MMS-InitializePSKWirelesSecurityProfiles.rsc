@@ -2,20 +2,21 @@
 # MikroTik Management Scripts
 # MMS Version: 0.01 Testing
 #
-# Script Version: 20260403154154
+# Script Version: 20260407124809
 # Script Filename: MMS-InitializePSKWirelesSecurityProfiles.rsc
 # Stored Script Name: MMS-InitializePSKWirelesSecurityProfiles
 # Description: Creates PSK wireless security profiles for the current access point from the downloaded dataset map.
 # Author: Kenneth G. Tipton
-# Date: 2026-04-03
-# Time: 15:41:54
-# used AI tools: GitHub Copilot (GPT-5.3-Codex)
+# Date: 2026-04-07
+# Time: 12:48:09
+# used AI tools: GitHub Copilot (GPT-5.4)
 # ===================================================================
 {
     # Set to true to suppress screen output; set to false for status output.
     :global silent false
     :global baseSiteLocationNumber
     :global MMSremoveFile
+    :global MMSdownloadFileFromFTP
     :local pskMapFile "dataSets/dataSetMapPSKWirelessSecurityProfiles.rsc"
 
     :do {
@@ -54,21 +55,17 @@
 
     # Download the PSK dataset map from FTP each run because it contains clear-text passwords.
     :local ftpUser "mikrotikscripts"
-    :local ftpSecretId [/ppp secret find name=$ftpUser]
-    :if ([:len $ftpSecretId] = 0) do={
+    :if ([:typeof $MMSdownloadFileFromFTP] = "nil") do={
         $removePSKMapFile
-        :error "initializePSKWirelesSecurityProfiles: PPP secret 'mikrotikscripts' not found"
+        :error "initializePSKWirelesSecurityProfiles: MMSdownloadFileFromFTP is not loaded"
     }
-    :local sid [:pick $ftpSecretId 0]
-    :local ftpServer [/ppp secret get $sid comment]
-    :local ftpPassword [/ppp secret get $sid password]
 
     $removePSKMapFile
 
-    :do {
-        /tool fetch address=$ftpServer user=$ftpUser password=$ftpPassword src-path="/dataSetMaps/dataSetMapPSKWirelessSecurityProfiles.rsc" dst-path=$pskMapFile mode=ftp keep-result=yes
+    :local pskFetchResult [$MMSdownloadFileFromFTP $ftpUser "/dataSetMaps/dataSetMapPSKWirelessSecurityProfiles.rsc" $pskMapFile true $silent]
+    :if ($pskFetchResult != "failed") do={
         :if ($silent = false) do={ :put ("Downloaded: " . $pskMapFile) }
-    } on-error={
+    } else={
         :error "initializePSKWirelesSecurityProfiles: Failed to download dataSetMapPSKWirelessSecurityProfiles.rsc"
     }
 
@@ -130,9 +127,9 @@
             [$ensureWPAPSKSecurityProfile $profileName $profilePassword]
         }
 
-        # 6-character names apply only when suffix matches baseSiteLocationNumber.
-        :if ($profileLen = 6) do={
-            :local profileSite [:pick $profileName 3 6]
+        # 18-character names apply only when 15-character suffix matches baseSiteLocationNumber.
+        :if ($profileLen = 18) do={
+            :local profileSite [:pick $profileName 3 18]
             :if ($profileSite = $siteNum) do={
                 [$ensureWPAPSKSecurityProfile $profileName $profilePassword]
             }

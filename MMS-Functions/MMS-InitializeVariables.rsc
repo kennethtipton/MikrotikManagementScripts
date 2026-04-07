@@ -2,13 +2,13 @@
 # MikroTik Management Scripts
 # MMS Version: 0.01 Testing
 #
-# Script Version: 20260403154154
+# Script Version: 20260407124809
 # Script Filename: MMS-InitializeVariables.rsc
 # Stored Script Name: MMS-InitializeVariables
 # Description: Initializes global variables commonly used in Mikrotik RouterOS scripts.
 # Author: Kenneth G. Tipton
-# Date: 2026-04-03
-# Time: 15:41:54
+# Date: 2026-04-07
+# Time: 12:48:09
 # used AI tools: GitHub Copilot (GPT-5.3-Codex)
 # ===================================================================
 {
@@ -16,6 +16,14 @@
 
     # Set to true to suppress screen output, false to show common variable values.
     :global silent true
+
+    # Local on-device subdirectories used by MMS scripts.
+    :global dataSetMapsLocalSubdirectory "dataSets/"
+    :global mmsFunctionsLocalSubdirectory "MMS-Functions/"
+
+    # SMTP defaults for notification workflows.
+    :global smtpServerFqdn "smtp.generationsgaither.com"
+    :global smtpServerPort 587
 
     # ===============================
     # Import dataset maps from external files
@@ -33,13 +41,13 @@
             :if ($silent = false) do={ :put "ERROR: Failed to import dataSetMapDeviceType" }
         }
         :do {
-            /import file-name=dataSets/dataSetMapLocationBase.rsc
-            :if ($silent = false) do={ :put "Imported dataSetMapLocationBase" }
-            :log info "initializeVariables: Imported dataSetMapLocationBase"
+            /import file-name=dataSets/dataSetMapLocationBaseSubnetCidr.rsc
+            :if ($silent = false) do={ :put "Imported dataSetMapLocationBaseSubnetCidr" }
+            :log info "initializeVariables: Imported dataSetMapLocationBaseSubnetCidr"
         } on-error={
             :set allOk false
-            :log error "initializeVariables: Failed to import dataSetMapLocationBase"
-            :if ($silent = false) do={ :put "ERROR: Failed to import dataSetMapLocationBase" }
+            :log error "initializeVariables: Failed to import dataSetMapLocationBaseSubnetCidr"
+            :if ($silent = false) do={ :put "ERROR: Failed to import dataSetMapLocationBaseSubnetCidr" }
         }
         :do {
             /import file-name=dataSets/dataSetMapDeviceLocationAtSite.rsc
@@ -73,7 +81,7 @@
     # Diagnostic: Show type and sample of imported variables
     :if ($silent = false) do={
         :put ("dataSetMapDeviceType type: " . [:typeof $dataSetMapDeviceType])
-        :put ("dataSetMapLocationBase type: " . [:typeof $dataSetMapLocationBase])
+        :put ("dataSetMapLocationBaseSubnetCidr type: " . [:typeof $dataSetMapLocationBaseSubnetCidr])
         :put ("dataSetMapDeviceLocationAtSite type: " . [:typeof $dataSetMapDeviceLocationAtSite])
         :if ([:typeof $dataSetMapDeviceLocationAtSite] = "array") do={
             :local hn [/system identity get name]
@@ -133,52 +141,89 @@
         :return $devicesSiteLocation
     }
 
-
-    # Function - Get the base site location number from the hostname
-    # The base site location number is the fourth set of three characters in the hostname
-    # Returns the site number if found in dataSetMapLocationBase, else ""
-    :local getBaseSiteLocationNumber do={
-        :global dataSetMapLocationBase
-        :local hn [/system identity get name]
-        :if ([:len $hn] < 12) do={
-            :return ""
-        }
-        :local siteNum [:pick $hn 9 12]
-        :if ([:typeof ($dataSetMapLocationBase->$siteNum)] = "nil") do={
-            :return ""
-        }
-        :return $siteNum
+    # Helper - Parse site number from a combined value "siteNumber:XXX~LOCATION"
+    :local parseSiteNum do={
+        :local v $1
+        :if ([:typeof $v] = "nil" || [:len $v] = 0) do={ :return "" }
+        :local colonPos [:find $v ":"]
+        :local tildePos [:find $v "~"]
+        :if ([:typeof $colonPos] = "nil" || [:typeof $tildePos] = "nil") do={ :return "" }
+        :return [:pick $v ($colonPos + 1) $tildePos]
     }
 
-    # Function - Get the base site location name for the device from the baseSiteLocationNumber and dataSetMapLocationBase
+    # Helper - Parse location name from a combined value "siteNumber:XXX~LOCATION"
+    :local parseLocationName do={
+        :local v $1
+        :if ([:typeof $v] = "nil" || [:len $v] = 0) do={ :return "" }
+        :local tildePos [:find $v "~"]
+        :if ([:typeof $tildePos] = "nil") do={ :return $v }
+        :return [:pick $v ($tildePos + 1) [:len $v]]
+    }
+
+    # Function - Get the base site location number from the hostname
+    # Uses a 15-character subnet ID string: [oct1][oct2][oct3][000][netbits], each zero-padded to 3 digits.
+    # Example for subnet 10.10.43.0/24: 010010043000024
+    # Validates against dataSetMapLocationBaseSubnetCidr using the subnet CIDR key derived from the hostname.
+    # Returns the 15-character subnet ID if found, else ""
+    :local getBaseSiteLocationNumber do={
+        :global dataSetMapLocationBaseSubnetCidr
+        :local hn [/system identity get name]
+        :if ([:len $hn] < 18) do={
+            :return ""
+        }
+        :local a [:tonum [:pick $hn 3 6]]
+        :local b [:tonum [:pick $hn 6 9]]
+        :local c [:tonum [:pick $hn 9 12]]
+        :local netbits [:tonum [:pick $hn 15 18]]
+        :local subnetKey ("$a.$b.$c.0/$netbits")
+        :local rawValue ($dataSetMapLocationBaseSubnetCidr->$subnetKey)
+        :if ([:typeof $rawValue] = "nil") do={
+            :return ""
+        }
+        :return [:pick $hn 3 18]
+    }
+
+    # Function - Get the base site location name for the device from the baseSiteLocationNumber and dataSetMapLocationBaseSubnetCidr
     # Usage: :set $baseSiteLocationName [$getDeviceBaseLocation]
     :global getDeviceBaseLocation do={
-        :global dataSetMapLocationBase
+        :global dataSetMapLocationBaseSubnetCidr
 
         :if ([:len $baseSiteLocationNumber] = 0) do={
             :return ""
         }
-        :local siteNumber ($baseSiteLocationNumber)
-        :local baseLocation ($dataSetMapLocationBase->$baseSiteLocationNumber)
-        :if ([:typeof $baseLocation] = "nil") do={
+        :local hn [/system identity get name]
+        :local a [:tonum [:pick $hn 3 6]]
+        :local b [:tonum [:pick $hn 6 9]]
+        :local c [:tonum [:pick $hn 9 12]]
+        :local netbits [:tonum [:pick $hn 15 18]]
+        :local subnetKey ("$a.$b.$c.0/$netbits")
+        :local rawValue ($dataSetMapLocationBaseSubnetCidr->$subnetKey)
+        :if ([:typeof $rawValue] = "nil") do={
             :return ""
         }
-        :return $baseLocation
+        :return [$parseLocationName $rawValue]
     }
 
     # Function - Determine if the current site is a multi-building site
-    # Uses getBaseSiteLocationNumber to get the site number, then checks dot count in dataSetMapLocationBase value
+    # Uses getBaseSiteLocationNumber to get the site number, then checks dot count in dataSetMapLocationBaseSubnetCidr value
     # Returns "true" if value contains exactly 3 dots, else "false"
     :local isMultiBuildingSite do={
-        :global dataSetMapLocationBase
+        :global dataSetMapLocationBaseSubnetCidr
         :local siteNum [$getBaseSiteLocationNumber]
         :if ([:len $siteNum] = 0) do={
             :return "false"
         }
-        :local value ($dataSetMapLocationBase->$siteNum)
-        :if ([:typeof $value] = "nil") do={
+        :local hn [/system identity get name]
+        :local a [:tonum [:pick $hn 3 6]]
+        :local b [:tonum [:pick $hn 6 9]]
+        :local c [:tonum [:pick $hn 9 12]]
+        :local netbits [:tonum [:pick $hn 15 18]]
+        :local subnetKey ("$a.$b.$c.0/$netbits")
+        :local rawValue ($dataSetMapLocationBaseSubnetCidr->$subnetKey)
+        :if ([:typeof $rawValue] = "nil") do={
             :return "false"
         }
+        :local value [$parseLocationName $rawValue]
         :local dotCount 0
         :for i from=0 to=([:len $value] - 1) do={
             :if ([:pick $value $i ($i + 1)] = ".") do={
@@ -193,21 +238,27 @@
     }
 
     # Function - Get the standard comment base by combining the base location with the device location at site
-    # The base location (from dataSetMapLocationBase) is first, followed by a period, then the device location at site
+    # The base location (from dataSetMapLocationBaseSubnetCidr) is first, followed by a period, then the device location at site
     # (from dataSetMapDeviceLocationAtSite). For multi-building sites, the building info is embedded in the
     # device location at site value, so no separate multi-building map is needed.
     # Example: "GGI.TN.CENTERTOWN.CAMPUS-OLD_NASHVILLE_HIGHWAY_AND_CRISP_SPRINGS_ROAD.KOLTON_WAYNE_HOUSE.HOUSE_MANAGERS_OFFICE"
     :local getDeviceFullSiteLocationName do={
-        :global dataSetMapLocationBase
+        :global dataSetMapLocationBaseSubnetCidr
         :global dataSetMapDeviceLocationAtSite
         :local hn [/system identity get name]
         :if ([:len $baseSiteLocationNumber] = 0) do={
             :return ""
         }
-        :local baseLocation ($dataSetMapLocationBase->$baseSiteLocationNumber)
-        :if ([:typeof $baseLocation] = "nil") do={
+        :local a [:tonum [:pick $hn 3 6]]
+        :local b [:tonum [:pick $hn 6 9]]
+        :local c [:tonum [:pick $hn 9 12]]
+        :local netbits [:tonum [:pick $hn 15 18]]
+        :local subnetKey ("$a.$b.$c.0/$netbits")
+        :local rawValue ($dataSetMapLocationBaseSubnetCidr->$subnetKey)
+        :if ([:typeof $rawValue] = "nil") do={
             :return ""
         }
+        :local baseLocation [$parseLocationName $rawValue]
         :local deviceLocation ($dataSetMapDeviceLocationAtSite->$hn)
         :if ([:typeof $deviceLocation] = "nil") do={
             :return $baseLocation
@@ -342,6 +393,10 @@
         :put ("deviceIp=" . $deviceIp)
         :put ("deviceIpCidr=" . $deviceIpCidr)
 
+        :put "=== Email ==="
+        :put ("smtpServerFqdn=" . $smtpServerFqdn)
+        :put ("smtpServerPort=" . $smtpServerPort)
+
         :put "=== Device Details ==="
         :put ("deviceBoardName=" . $deviceBoardName)
         :put ("deviceManufacturer=" . $deviceManufacturer)
@@ -376,7 +431,7 @@
         "getDeviceBaseLocation";
         "dataSetMapDeviceLocationAtSite";
         "dataSetMapDeviceType";
-        "dataSetMapLocationBase";
+        "dataSetMapLocationBaseSubnetCidr";
         "deviceTypeMap";
         "locationBaseMap";
         "multiBuildingLocationMap";

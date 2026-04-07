@@ -2,13 +2,13 @@
 # MikroTik Management Scripts
 # MMS Version: 0.01 Testing
 #
-# Script Version: 20260403154154
+# Script Version: 20260403155849
 # Script Filename: MMS-BackupToFTP.rsc
 # Stored Script Name: MMS-SBackupToFTP
 # Description: Used to create two backup files of device and store on ftp server.
 # Author: Kenneth G. Tipton
 # Date: 2026-04-03
-# Time: 15:41:54
+# Time: 15:58:49
 # used AI tools: GitHub Copilot (GPT-5.3-Codex)
 # ===================================================================
 {
@@ -20,9 +20,9 @@
     :log info "Seting Backup Scripts Constants"
     :global deviceHostname
     :global deviceIPDesinator
-    :global ftpBackupServer
 
-    :local ftpUser $deviceHostname
+    :local ftpUser ("BKP" . [:pick $deviceHostname 3 15])
+    :local ftpBackupServer [/ppp secret get [/ppp secret find name=$ftpUser] comment]
     :local ftpPassword [/ppp secret get [/ppp secret find name=$ftpUser] password]
     :local certificatePassphrase [/ppp secret get [/ppp secret find name="certificatePassword"] password]
     :local certType "pkcs12"
